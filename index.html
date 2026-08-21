@@ -70,7 +70,25 @@
         </table>
     </fieldset>
 
-    <button id="btnClearItems" style="margin-top: 10px;">Clear Records</button>
+    <div style="margin-top: 10px;">
+        <button id="btnClearItems">Clear Records</button>
+
+        <label for="selSortBy" style="margin-left: 15px;">Sort by:</label>
+        <select id="selSortBy">
+            <option value="fname">First Name</option>
+            <option value="mname">Middle Name</option>
+            <option value="lname" selected>Last Name</option>
+            <option value="age">Age</option>
+        </select>
+
+        <select id="selSortOrder">
+            <option value="asc" selected>A-Z</option>
+            <option value="desc">Z-A</option>
+        </select>
+
+        <button id="btnSaveLocal">Save to Local Storage</button>
+    </div>
+
     <script src="main.js"></script>
 </body>
 </html>

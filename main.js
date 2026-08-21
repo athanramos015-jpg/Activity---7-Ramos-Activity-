@@ -1,17 +1,23 @@
 const btnInsertUpdate = document.getElementById("btnInsertUpdate");
 const btnClearItems = document.getElementById("btnClearItems");
 const btnClear = document.getElementById("btnClear");
+const btnSaveLocal = document.getElementById("btnSaveLocal");
+const selSortBy = document.getElementById("selSortBy");
+const selSortOrder = document.getElementById("selSortOrder");
 const tblRecords = document.getElementById("tblRecords");
+
+const STORAGE_KEY = "arrRecords";
 
 let arrRecords = new Array();
 const tblTHsLabels = ["First Name", "Middle Name", "Last Name", "Age", "Action"];
 
-if(arrRecords.length == 0) {
-    document.getElementById("status").style.display = "inline";
-    document.getElementById("status").innerHTML = "No Records...";
-} else {
-    document.getElementById("status").style.display = "none";
+// Load any previously saved records from Local Storage on page load
+const savedRecords = localStorage.getItem(STORAGE_KEY);
+if(savedRecords) {
+    arrRecords = JSON.parse(savedRecords);
 }
+
+iterateRecords();
 
 btnInsertUpdate.addEventListener("click", () => {
 
@@ -39,7 +45,7 @@ btnInsertUpdate.addEventListener("click", () => {
       
         arrRecords.push(infoRecord);
     
-        iterateRecords();
+        sortRecords();
     
         console.log(inputTxt);
         console.log(infoRecord);
@@ -59,7 +65,7 @@ btnInsertUpdate.addEventListener("click", () => {
         arrRecords[parseInt(btnInsertUpdate.value)].lname = inputTxt[2].value;
         arrRecords[parseInt(btnInsertUpdate.value)].age = parseInt(inputTxt[3].value)  ;
         
-        iterateRecords();
+        sortRecords();
 
         for(const txt of inputTxt) {
             txt.value = "";
@@ -96,7 +102,46 @@ btnClearItems.addEventListener("click", () => {
     btnInsertUpdate.innerHTML = "Insert";
     btnInsertUpdate.value = "insert";
 
+    localStorage.removeItem(STORAGE_KEY);
+
 });
+
+selSortBy.addEventListener("change", () => {
+    sortRecords();
+});
+
+selSortOrder.addEventListener("change", () => {
+    sortRecords();
+});
+
+btnSaveLocal.addEventListener("click", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arrRecords));
+    alert("Records saved to Local Storage!");
+});
+
+
+function sortRecords() {
+    const sortBy = selSortBy.value;
+    const order = selSortOrder.value;
+
+    arrRecords.sort((a, b) => {
+        let valA = a[sortBy];
+        let valB = b[sortBy];
+
+        if(sortBy == "age") {
+            return order == "asc" ? valA - valB : valB - valA;
+        } else {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+
+            if(valA < valB) return order == "asc" ? -1 : 1;
+            if(valA > valB) return order == "asc" ? 1 : -1;
+            return 0;
+        }
+    });
+
+    iterateRecords();
+}
 
 
 function iterateRecords() {
@@ -167,12 +212,12 @@ function iterateRecords() {
             tbdataAge.innerHTML = rec.age;
 
             btnDelete.innerHTML = "Delete";
-            btnDelete.setAttribute("onclick", `deleteData(${i})`);
+            btnDelete.setAttribute("onclick", 'deleteData(${i})');
             btnDelete.style.marginRight = "5px";
 
             btnUpdate.innerHTML = "Edit";
             btnUpdate.setAttribute("value", "update");
-            btnUpdate.setAttribute("onclick", `updateData(${i})`);
+            btnUpdate.setAttribute("onclick", 'updateData(${i})');
             btnUpdate.style.marginRight = "5px";
 
             tbdataActionBtn.appendChild(btnDelete);
@@ -211,5 +256,5 @@ function updateData(i) {
     inputTxt[3].value = arrRecords[i].age;
 
     btnInsertUpdate.innerHTML = "Update";
-    btnInsertUpdate.value = `${i}`;
+    btnInsertUpdate.value = '${i}';
 }
